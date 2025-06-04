@@ -1,2 +1,2 @@
-# ParaKyla
-Bolt Project for Group ParaKyla
+# Calibris
+Bolt Project for Group Calibrisa
