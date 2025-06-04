@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{{title}}</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+
+    @keyframes glow {
+      0% { text-shadow: 0 0 5px #fff, 0 0 10px #f0f, 0 0 15px #f0f; }
+      50% { text-shadow: 0 0 20px #0ff, 0 0 30px #0ff, 0 0 40px #0ff; }
+      100% { text-shadow: 0 0 5px #fff, 0 0 10px #f0f, 0 0 15px #f0f; }
+    }
+    
+    @keyframes pop-in {
+      0% {
+        transform: scale(0.5);
+        opacity: 0;
+      }
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    .animate-glow {
+      animation: glow 2s infinite alternate;
+    }
+
+    .animate-pop-in {
+      animation: pop-in 0.7s ease-out forwards;
+    }
+
+  </style>
+</head>
+<body class="h-screen bg-gradient-to-br from-purple-800 via-black to-gray-900 flex items-center justify-center">
+
+  <div class="text-center animate-pop-in">
+    <h1 class="text-6xl md:text-8xl font-extrabold text-white animate-glow">
+      {{title}}
+    </h1>
+    <p class="mt-4 text-gray-300 text-lg md:text-2xl tracking-widest">
+      {{desc}}
+    </p>
+    <div class="mt-8">
+    <a href="\">
+      <button class="px-6 py-3 bg-pink-600 hover:bg-pink-700 text-white font-semibold rounded-full shadow-lg transition-all duration-300 hover:scale-105">
+        Home
+      </button>
+    </a>
+    </div>
+  </div>
+
+</body>
+</html>

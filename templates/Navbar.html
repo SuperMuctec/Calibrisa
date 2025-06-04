@@ -1,0 +1,76 @@
+<!-- templates/navbar.html -->
+<script src="static/spaghetti.js"></script>
+<nav
+  id="navbar"
+  class="flex justify-between items-center bg-gradient-to-r from-indigo-500 via-sky-500 to-emerald-500 dark:from-indigo-900 dark:via-violet-800 dark:to-pink-800"
+>
+  <span
+    id="navbar-title"
+    class="px-6 md:px-20 py-4 font-semibold text-lg md:text-xl text-white whitespace-nowrap"
+  >
+    {{nb}}
+  </span>
+
+  <ul
+    id="navbar-menu"
+    class="flex flex-wrap justify-end items-center gap-2 md:gap-6 px-6 md:px-28 py-4 font-mono"
+  >
+    <a href="/">
+      <li
+        id="nav-home"
+        class="border-2 border-slate-200 hover:border-slate-800 transform-gpu transition-transform text-white hover:bg-orange-500 hover:-translate-y-1 px-4 rounded-full py-[5px] whitespace-nowrap"
+      >
+        Home
+      </li>
+    </a>
+    <a href="/Hub">
+      <li
+        id="nav-links"
+        class="border-2 border-slate-200 hover:border-slate-800 transform-gpu transition-transform text-white hover:bg-orange-500 hover:-translate-y-1 px-4 rounded-full py-[5px] whitespace-nowrap"
+      >
+        Links
+      </li>
+    </a>
+    <a href="https://discord.gg/Q4Ys8rTw6y" target="_blank" rel="noreferrer">
+      <li
+        id="nav-discord"
+        class="border-2 border-slate-200 hover:border-slate-800 transform-gpu transition-transform text-white hover:bg-orange-500 hover:-translate-y-1 px-4 rounded-full py-[5px] whitespace-nowrap"
+      >
+        Discord
+      </li>
+    </a>
+
+    <!-- User block: static example, replace with Jinja if dynamic -->
+    {% if user %}
+    <a href="/logout">
+    {% else %}
+    <a href="/login">
+    {% endif %}
+    <li
+      id="nav-login"
+      class="border-2 border-slate-200 hover:border-slate-800 transform-gpu transition-transform text-white hover:bg-orange-500 hover:-translate-y-1 px-4 rounded-full py-[5px] whitespace-nowrap"
+    >
+    {% if user %}
+      {{user}}
+    {% else %}
+      Login
+    {% endif %}
+      
+    </li>
+  </a>
+
+    <li
+      id="darkmode-wrapper"
+      class="transform-gpu transition-transform hover:-translate-y-1 whitespace-nowrap"
+    >
+      <button id="darkmode-btn" onclick="darkmode()">
+        <img
+          id="darkmode"
+          class="w-6 md:w-8"
+          src="/static/dark.svg"
+          alt="dark mode"
+        />
+      </button>
+    </li>
+  </ul>
+</nav>

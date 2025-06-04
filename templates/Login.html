@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Login</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="dark:bg-slate-800">
+  <div class="relative mx-auto my-24 max-w-md w-[90%] group">
+    <div class="absolute inset-0 flex items-center justify-center rounded-xl border-2 py-16 sm:py-20 backdrop-blur-[0.01px] transform-gpu transition-transform duration-700 group-hover:-rotate-12 border-black dark:border-white z-0"></div>
+    <div class="absolute inset-0 flex items-center justify-center rounded-xl border-2 py-16 sm:py-20 backdrop-blur-[0.01px] transform-gpu transition-transform duration-700 group-hover:rotate-12 border-black dark:border-white z-0"></div>
+
+    <div class="relative z-10 rounded-xl border-2 border-black dark:border-white py-16 px-6 sm:px-10 backdrop-blur-sm transition-all duration-700 ease-in-out hover:backdrop-blur-lg bg-white/10 dark:bg-black/10 hover:scale-105">
+      <h1 class="text-4xl sm:text-5xl font-extrabold text-center mb-12 text-black dark:text-white">
+        Login
+      </h1>
+
+      {% with messages = get_flashed_messages() %}
+        {% if messages %}
+          <div class="mb-6">
+            {% for msg in messages %}
+              <div class="p-4 rounded-md text-white text-center 
+                {% if 'successfully' in msg %}
+                  bg-green-600
+                {% else %}
+                  bg-red-600
+                {% endif %}">
+                {{ msg }}
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      {% endwith %}
+
+      <form  class="space-y-4 mb-8", method="post">
+        <input
+          type="text"
+          name="username"
+          placeholder="Username"
+          class="w-full rounded-md px-4 py-3 bg-white/70 dark:bg-black/40 border-2 border-black dark:border-white text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-green-500"
+        />
+        <input
+          type="password"
+          name="password"
+          placeholder="Password"
+          class="w-full rounded-md px-4 py-3 bg-white/70 dark:bg-black/40 border-2 border-black dark:border-white text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-green-500"
+        />
+        <button
+          type="submit"
+          class="w-full border-2 border-black dark:border-white rounded-full bg-green-300 text-green-800 dark:bg-green-800 dark:text-green-300 px-5 py-3 font-bold transform-gpu transition-all duration-500 hover:-translate-y-1 shadow-xl"
+        >
+          Login
+        </button>
+      </form>
+
+    </div>
+  </div>
+</body>
+</html>
