@@ -1,3 +1,6 @@
+![Logo](Logo.png) 
+
+
 
 # Calibrisa
 
@@ -45,8 +48,3 @@ Stock Market, at a glance
 - [@MasterSambit999](https://github.com/MasterSambit999)
 - [@Rick](https://github.com/rickchiron)
 
-
-## Contributors
-
-**SuperMuctec**
-![SuperMuctec](https://github.com/Supermuctec.png) 
