@@ -42,7 +42,7 @@ def create_board(ROWS, COLS, MINES_COUNT):
 @app.errorhandler(404)
 def not_found(e):
   # defining function
-  return render_template("Error-404.html")
+  return render_template("Errors/Error-404.html")
 
 @app.route("/")
 def home():
@@ -72,33 +72,14 @@ def home():
         }
     ]
     current_year = datetime.now().year
-    return render_template("Home.html", current_year=current_year, cards=cards, nb="Despairrr", user=reuter)
+    return render_template("Home.html", current_year=current_year, cards=cards, nb="Calibrisa", user=reuter)
 
-@app.route("/create", methods=["POST","GET"])
-def create():
-    try:
-        session["name"] = session["name"]
-        reuter = session["name"]
-    except:
-        reuter = None
-
-    if reuter:
-        pass
-    else:
-        return render_template("Error-403.html")
-
-    selected = None
-    numbers = list(range(5, 26))  # Generate 5 to 25
-    if request.method == "POST":
-        selected = request.form.get("number")
-
-    return render_template("Create.html", numbers=numbers, selected=selected, user=reuter, nb="Create a Game")
 @app.route("/games")
 def games():
     if "mines" in request.args.keys():
         mines = request.args["mines"]
     else:
-        return render_template("Error-404.html")
+        return render_template("Errors/Error-404.html")
     
     if int(mines) < 5:
         return render_template("Invalid.html", title="Messing Around", desc="Don't mess around, mines should be < 25 and > 4")
