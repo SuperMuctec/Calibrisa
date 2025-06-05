@@ -14,7 +14,6 @@ app.config["SESSION_TYPE"] = "filesystem"
 dotenv.load_dotenv()
 key = os.getenv('SECRET')
 app.secret_key = key
-
 Session(app)
 
 

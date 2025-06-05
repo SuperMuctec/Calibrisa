@@ -12,3 +12,6 @@ CREATE TABLE "USERS" (
 
 conn.commit()
 conn.close()
+
+with open(".env", "w") as f:
+    f.write("SECRET=Calibrisa")
