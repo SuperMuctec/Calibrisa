@@ -5,6 +5,7 @@ import dotenv
 import os
 import sqlite3
 from flask_session import Session
+import smtplib
 
 app = Flask(__name__)
 app.config["SESSION_PERMANENT"] = False
@@ -15,29 +16,6 @@ dotenv.load_dotenv()
 key = os.getenv('SECRET')
 app.secret_key = key
 Session(app)
-
-
-def create_board(ROWS, COLS, MINES_COUNT):
-    board = [[0 for _ in range(COLS)] for _ in range(ROWS)]
-    mines = set()
-    while len(mines) < MINES_COUNT:
-        r, c = random.randint(0, ROWS-1), random.randint(0, COLS-1)
-        mines.add((r, c))
-    for (r, c) in mines:
-        board[r][c] = -1
-
-    for r in range(ROWS):
-        for c in range(COLS):
-            if board[r][c] == -1:
-                continue
-            count = 0
-            for dr in [-1, 0, 1]:
-                for dc in [-1, 0, 1]:
-                    nr, nc = r+dr, c+dc
-                    if 0 <= nr < ROWS and 0 <= nc < COLS and board[nr][nc] == -1:
-                        count += 1
-            board[r][c] = count
-    return board
 
 @app.errorhandler(404)
 def not_found(e):
@@ -74,18 +52,6 @@ def home():
     current_year = datetime.now().year
     return render_template("Home.html", current_year=current_year, cards=cards, nb="Calibrisa", user=reuter)
 
-@app.route("/games")
-def games():
-    if "mines" in request.args.keys():
-        mines = request.args["mines"]
-    else:
-        return render_template("Errors/Error-404.html")
-    
-    if int(mines) < 5:
-        return render_template("Invalid.html", title="Messing Around", desc="Don't mess around, mines should be < 25 and > 4")
-
-
-    return render_template("Home.html")
 @app.route("/register", methods=["POST", "GET"])
 def register():
     if request.method == 'POST':

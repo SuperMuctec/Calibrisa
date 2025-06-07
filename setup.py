@@ -1,5 +1,9 @@
 import sqlite3
 
+with open(".env", "w") as f:
+    f.write("SECRET=Calibrisa")
+    
+
 conn = sqlite3.connect("databases/users.db")
 cur = conn.cursor()
 
@@ -12,6 +16,3 @@ CREATE TABLE "USERS" (
 
 conn.commit()
 conn.close()
-
-with open(".env", "w") as f:
-    f.write("SECRET=Calibrisa")
