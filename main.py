@@ -1,6 +1,5 @@
 from flask import *
 from datetime import datetime
-import random
 import dotenv
 import os
 import sqlite3
@@ -14,6 +13,7 @@ app.config["SESSION_TYPE"] = "filesystem"
 
 dotenv.load_dotenv()
 key = os.getenv('SECRET')
+password=os.getenv("APP")
 app.secret_key = key
 Session(app)
 
