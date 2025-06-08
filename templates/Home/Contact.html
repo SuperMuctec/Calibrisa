@@ -11,13 +11,13 @@
       <input
         type="text"
         name="name"
-        placeholder="Enter Your Name"
+        placeholder="Name"
         class="mb-4 w-full rounded-md p-3 border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white/80 dark:bg-gray-800 dark:text-white transition-all"
       />
       <input
-        type="email"
-        name="email"
-        placeholder="Enter Your Email"
+        type="text"
+        name="subject"
+        placeholder="Subject"
         class="mb-4 w-full rounded-md p-3 border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white/80 dark:bg-gray-800 dark:text-white transition-all"
       />
       <textarea
@@ -26,7 +26,22 @@
         placeholder="Enter Your Message"
         class="mb-4 w-full rounded-md p-3 border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white/80 dark:bg-gray-800 dark:text-white transition-all"
       ></textarea>
-
+      {% with messages = get_flashed_messages() %}
+        {% if messages %}
+          <div class="mb-6">
+            {% for msg in messages %}
+              <div class="p-4 rounded-md text-white text-center 
+                {% if 'successful' in msg %}
+                  bg-green-600
+                {% else %}
+                  bg-red-600
+                {% endif %}">
+                {{ msg }}
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      {% endwith %}
       <button
         type="submit"
         class="dark:bg-blue-600 text-white px-4 py-2 rounded-full dark:hover:bg-blue-700 w-full transform-gpu transition-all hover:-translate-y-1 duration-200 bg-green-500 hover:bg-green-700"

@@ -1,4 +1,10 @@
 import sqlite3
+import json
+
+with open("config.json", "r") as f:
+    config = json.load(f)
+
+receiver_email = config["googlepass"]
 
 with open(".env", "w") as f:
     f.write("SECRET=Calibrisa")

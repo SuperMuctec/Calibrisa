@@ -12,7 +12,8 @@ Stock Market, at a glance
 1. **Clone The Repositoty**
 
 ```shell
-  git clone https://github.com/SuperMuctec/Calibrisa
+  git clone https://github.com/SuperMuctec/Calibrisa &&
+  cd Calibrisa
 ```
 
 2. **Make executable**
@@ -21,18 +22,25 @@ Stock Market, at a glance
   chmod +x setup.sh
 ```
 
-3. **Run the setup file**
+3. **Configure Your project**
+
+Edit config.json in the root directory to match your preferences
+```shell
+  vim config.json
+```
+
+4. **Run the setup file**
 
 ```shell
   ./setup.sh
 ```
 
-4. **To Stop**
+5. **To Stop**
 ```
   Ctrl + C in the terminal
 ```
 
-5. **Rerun**
+6. **Rerun**
 ```
   ./run.sh
 ```

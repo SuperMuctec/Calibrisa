@@ -5,6 +5,13 @@ import os
 import sqlite3
 from flask_session import Session
 import smtplib
+import json
+
+with open("config.json", "r") as f:
+    config = json.load(f)
+
+receiver_email = config["receiver_email"]
+
 
 app = Flask(__name__)
 app.config["SESSION_PERMANENT"] = False
@@ -13,7 +20,7 @@ app.config["SESSION_TYPE"] = "filesystem"
 
 dotenv.load_dotenv()
 key = os.getenv('SECRET')
-password=os.getenv("APP")
+google_password=os.getenv("APP")
 app.secret_key = key
 Session(app)
 
@@ -22,14 +29,34 @@ def not_found(e):
   # defining function
   return render_template("Errors/Error-404.html")
 
-@app.route("/")
-def home():
-
+def check_session(session):
     try:
         session["name"] = session["name"]
         reuter = session["name"]
     except:
         reuter = None
+
+    return reuter
+
+@app.route("/", methods=["GET","POST"])
+def home():
+
+    if request.method=="POST":
+        name = request.form.get("name")
+        subject = request.form.get("subject")
+        content = request.form.get("content")
+
+        try:
+            server = smtplib.SMTP("smtp.gmail.com", 587)
+            server.starttls()  # STARTTLS to encrypt the connection
+            server.login("calibrisa.official@gmail.com", google_password)
+            message= f"Subject: {subject},\n From {name} through Calibrisa: Stock Analyzer \n Message: \n {content}"
+            server.sendmail("calibrisa.official@gmail.com", f"{receiver_email}", message)
+            server.quit()
+            flash("Sending email successful")
+        except:
+            flash("An error occured, check console for more")
+    reuter = check_session(session)
     cards = [
         {
             "title": "Practice",
