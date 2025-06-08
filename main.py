@@ -6,6 +6,7 @@ import sqlite3
 from flask_session import Session
 import smtplib
 import json
+from email.message import EmailMessage
 
 with open("config.json", "r") as f:
     config = json.load(f)
@@ -44,17 +45,24 @@ def home():
     if request.method=="POST":
         name = request.form.get("name")
         subject = request.form.get("subject")
-        content = request.form.get("content")
+        content = request.form.get("message")
 
         try:
-            server = smtplib.SMTP("smtp.gmail.com", 587)
-            server.starttls()  # STARTTLS to encrypt the connection
-            server.login("calibrisa.official@gmail.com", google_password)
-            message= f"Subject: {subject},\n From {name} through Calibrisa: Stock Analyzer \n Message: \n {content}"
-            server.sendmail("calibrisa.official@gmail.com", f"{receiver_email}", message)
-            server.quit()
+            with smtplib.SMTP("smtp.gmail.com", 587) as smtp:
+                smtp.starttls()
+                smtp.login("calibrisa.official@gmail.com", google_password)
+
+                msg = EmailMessage()
+                msg['Subject'] = subject
+                msg['From'] = 'calibrisa.official@gmail.com'
+                msg['To'] = receiver_email
+                msg.set_content(f"\n From {name} through Calibrisa: Stock Analyzer\n\nMessage:\n{content}")
+
+                smtp.send_message(msg)
+
             flash("Sending email successful")
-        except:
+        except Exception as e:
+            print(e)
             flash("An error occured, check console for more")
     reuter = check_session(session)
     cards = [
