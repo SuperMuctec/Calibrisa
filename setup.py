@@ -4,11 +4,13 @@ import json
 with open("config.json", "r") as f:
     config = json.load(f)
 
-receiver_email = config["googlepass"]
+googlepass = config["googlepass"]
+logo = config["logo.dev"]
 
 with open(".env", "w") as f:
     f.write("SECRET=Calibrisa")
-    f.append("APP=your\ google\ app\ password")
+    f.append(f"APP={googlepass}")
+    f.append(f"LOGO={logo}")
 
 conn = sqlite3.connect("databases/users.db")
 cur = conn.cursor()
