@@ -7,42 +7,66 @@ from flask_session import Session
 import smtplib
 import json
 from email.message import EmailMessage
+import random
+import bcrypt
 
+# Load config and environment variables
 with open("config.json", "r") as f:
     config = json.load(f)
 
 receiver_email = config["receiver_email"]
 
-
-app = Flask(__name__)
-app.config["SESSION_PERMANENT"] = False
-app.config["SESSION_TYPE"] = "filesystem"
-
-
 dotenv.load_dotenv()
 key = os.getenv('SECRET')
-google_password=os.getenv("APP")
+google_password = os.getenv("APP")
+salt = bcrypt.gensalt()
+
+# Flask setup
+app = Flask(__name__)
 app.secret_key = key
+app.config["SESSION_PERMANENT"] = False
+app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
+# Email settings
+SENDER_EMAIL = "calibrisa.official@gmail.com"
+SENDER_PASSWORD = google_password
+
+# OTP Email sender
+def send_otp_email(recipient_email, otp):
+    msg = EmailMessage()
+    msg['Subject'] = "Your OTP Code"
+    msg['From'] = SENDER_EMAIL
+    msg['To'] = recipient_email
+    msg.set_content(f"Your OTP is: {otp}")
+
+    try:
+        with smtplib.SMTP("smtp.gmail.com", 587) as server:
+            server.starttls()
+            server.login(SENDER_EMAIL, SENDER_PASSWORD)
+            server.send_message(msg)
+        return True
+    except Exception as e:
+        print("Email failed:", e)
+        return False
+
+# Error page
 @app.errorhandler(404)
 def not_found(e):
-  # defining function
-  return render_template("Errors/Error-404.html")
+    return render_template("Errors/Error-404.html")
+
+# Check session
 
 def check_session(session):
     try:
-        session["name"] = session["name"]
-        reuter = session["name"]
+        return session["name"]
     except:
-        reuter = None
+        return None
 
-    return reuter
-
-@app.route("/", methods=["GET","POST"])
+# Home page
+@app.route("/", methods=["GET", "POST"])
 def home():
-
-    if request.method=="POST":
+    if request.method == "POST":
         name = request.form.get("name")
         subject = request.form.get("subject")
         content = request.form.get("message")
@@ -50,11 +74,11 @@ def home():
         try:
             with smtplib.SMTP("smtp.gmail.com", 587) as smtp:
                 smtp.starttls()
-                smtp.login("calibrisa.official@gmail.com", google_password)
+                smtp.login(SENDER_EMAIL, google_password)
 
                 msg = EmailMessage()
                 msg['Subject'] = subject
-                msg['From'] = 'calibrisa.official@gmail.com'
+                msg['From'] = SENDER_EMAIL
                 msg['To'] = receiver_email
                 msg.set_content(f"\n From {name} through Calibrisa: Stock Analyzer\n\nMessage:\n{content}")
 
@@ -63,54 +87,122 @@ def home():
             flash("Sending email successful")
         except Exception as e:
             print(e)
-            flash("An error occured, check console for more")
-    reuter = check_session(session)
+            flash("An error occurred, check console for more")
+
+    user = check_session(session)
     cards = [
         {
             "title": "Practice",
             "description": "Provide you practice so that you can flex or win at the big place",
             "tags": [
-                { "label": "Practice", "bg": "bg-green-100", "text": "text-red-700" },
-                { "label": "Play", "bg": "bg-blue-100", "text": "text-yellow-700" },
+                {"label": "Practice", "bg": "bg-green-100", "text": "text-red-700"},
+                {"label": "Play", "bg": "bg-blue-100", "text": "text-yellow-700"},
             ],
         },
         {
             "title": "Compete",
             "description": "Compete with other players to win big.",
             "tags": [
-                { "label": "Community", "bg": "bg-blue-100", "text": "text-blue-700" },
-                { "label": "Compete", "bg": "bg-cyan-100", "text": "text-fuchsia-700" },
-                { "label": "Leaderboard", "bg": "bg-fuchsia-100", "text": "text-fuchsia-700" },
+                {"label": "Community", "bg": "bg-blue-100", "text": "text-blue-700"},
+                {"label": "Compete", "bg": "bg-cyan-100", "text": "text-fuchsia-700"},
+                {"label": "Leaderboard", "bg": "bg-fuchsia-100", "text": "text-fuchsia-700"},
             ],
         }
     ]
-    current_year = datetime.now().year
-    return render_template("Home.html", current_year=current_year, cards=cards, nb="Calibrisa", user=reuter)
+    return render_template("Home.html", current_year=datetime.now().year, cards=cards, nb="Calibrisa", user=user)
 
 @app.route("/register", methods=["POST", "GET"])
 def register():
     if request.method == 'POST':
         username = request.form.get("username")
+        email = request.form.get("email")
         password = request.form.get("password")
+        otp_input = ''.join([request.form.get(f"otp{i}", "") for i in range(4)])
 
+        # If we're verifying OTP
+        if 'otp' in session and 'attempts' in session and session.get("otp"):
+            if otp_input == session['otp']:
+                conn = sqlite3.connect("databases/users.db")
+                cur = conn.cursor()
+                p = session["password"].encode()
+                hashed = bcrypt.hashpw(p, salt)
+                cur.execute("INSERT INTO USERS (Username, Password, Email) VALUES (?, ?, ?)",
+                            (session['username'], hashed, session['email']))
+                conn.commit()
+                conn.close()
+                session.pop('otp', None)
+                session.pop('attempts', None)
+                session.pop('username', None)
+                session.pop('password', None)
+                session.pop('email', None)
+                flash("🎉 Registration successful!", "success")
+                return redirect(url_for('register'))
+            else:
+                session['attempts'] -= 1
+                if session['attempts'] <= 0:
+                    flash("Access Denied: Wrong OTP", "danger")
+                    session.pop('otp', None)
+                    session.pop('attempts', None)
+                else:
+                    flash(f"Incorrect OTP. {session['attempts']} tries left.", "danger")
+                return render_template("Register.html", show_otp=True,
+                                       username=session.get('username', ''),
+                                       email=session.get('email', ''))
+
+        # Before sending OTP, check if user exists
         conn = sqlite3.connect("databases/users.db")
         cur = conn.cursor()
+        cur.execute("SELECT * FROM USERS WHERE Username = ? OR Email = ?", (username, email))
+        existing_user = cur.fetchone()
+        conn.close()
 
-        cur.execute("SELECT * FROM USERS WHERE Username = ?", (username,))
-        result = cur.fetchone()
+        if existing_user:
+            flash("Username or Email already exists", "login")
+            return render_template("Register.html", username=username, email=email)
 
-        if result:
-            flash("Username already exists! Please choose another.")
-            return redirect(url_for('register'))
-        else:
-            cur.execute("INSERT INTO USERS (Username, Password) VALUES (?, ?)", (username, password))
-            conn.commit()
-            conn.close()
-            flash("Registration successful! You can now log in.")
-            return redirect(url_for('register'))
-        
+        # If user does not exist, generate and send OTP
+        otp = ''.join([str(random.randint(0, 9)) for _ in range(4)])
+        session['otp'] = otp
+        session['attempts'] = 3
+        session['username'] = username
+        session['email'] = email
+        session['password'] = password  # temporarily storing until OTP is confirmed
+
+        send_otp_email(email, otp)
+        flash("OTP sent to your email.", "info")
+        return render_template("Register.html", show_otp=True, username=username, email=email, password=password)
+
+    # On GET request, clean session
+    session.pop('otp', None)
+    session.pop('attempts', None)
+    session.pop('username', None)
+    session.pop('email', None)
+    session.pop('password', None)
     return render_template("Register.html")
 
+
+
+# Resend OTP
+@app.route("/resend_otp", methods=["POST"])
+def resend_otp():
+    username = session.get("username")
+    email = session.get("email")
+
+    if not username or not email:
+        flash("Session expired. Please fill the form again.", "danger")
+        return redirect(url_for("register"))
+
+    otp = ''.join([str(random.randint(0, 9)) for _ in range(4)])
+    session['otp'] = otp
+    session['attempts'] = 3
+
+    if send_otp_email(email, otp):
+        flash("OTP resent!", "info")
+    else:
+        flash("Could not resend OTP. Try again.", "danger")
+    return redirect(url_for("register"))
+
+# Login route
 @app.route("/login", methods=["POST", "GET"])
 def login():
     if request.method == 'POST':
@@ -119,30 +211,28 @@ def login():
 
         conn = sqlite3.connect("databases/users.db")
         cur = conn.cursor()
-
-        cur.execute("SELECT * FROM USERS WHERE Username = ?", (username,))
+        cur.execute("SELECT * FROM USERS WHERE Email = ?", (username,))
         result = cur.fetchone()
-        db_username = result[0]
-        db_password = result[1]
+
         if result:
-            if username == db_username and password == db_password:
-                session["name"] = username
-                print(session)
+            db_username = result[2]
+            db_password = result[1]
+            if username == db_username and bcrypt.checkpw(password.encode(), db_password):
+                session["name"] = result[0]
                 return redirect(url_for('home'))
             else:
                 flash("Your Password is wrong")
                 return redirect(url_for('login'))
         else:
-            flash("Username does not exist! Please register by clicking on this popup.")
+            flash("Username does not exist! Please register.")
             return redirect(url_for('login'))
     return render_template("Login.html")
 
+# Logout
 @app.route("/logout")
 def logout():
-    try:
-        session["name"] = None
-    except:
-        pass
+    session.pop("name", None)
     return redirect(url_for('home'))
 
-app.run(debug=True)
+if __name__ == '__main__':
+    app.run(debug=True)
