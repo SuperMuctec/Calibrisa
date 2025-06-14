@@ -1,5 +1,35 @@
 import sqlite3
 import json
+import csv
+import sqlite3
+
+csv_file = 'data/NASDAQ/Ticker.csv'
+
+conn = sqlite3.connect('databases/stocks.db')
+cursor = conn.cursor()
+
+cursor.execute('''
+    CREATE TABLE IF NOT EXISTS STOCKS (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        Tickers TEXT NOT NULL
+    )
+''')
+
+with open(csv_file, 'r', newline='') as file:
+    reader = csv.reader(file)
+    
+    next(reader, None)
+    
+    for row in reader:
+        if row: 
+            ticker = row[0]
+            cursor.execute("INSERT INTO STOCKS (Tickers) VALUES (?)", (ticker,))
+
+
+conn.commit()
+conn.close()
+
+
 
 with open("config.json", "r") as f:
     config = json.load(f)
