@@ -1,5 +1,6 @@
 {
     "googlepass" : "Google Password",
     "receiver_email" : "supermutec@gmail.com",
-    "logo.dev": "logo-dev-token"
+    "logo.dev": "logo.dev api key",
+    "app-secret": "Your app secret"
 }

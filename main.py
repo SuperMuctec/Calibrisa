@@ -57,6 +57,7 @@ def not_found(e):
 
 # Check session
 
+
 def check_session(session):
     try:
         return session["name"]
@@ -224,16 +225,35 @@ def login():
                 flash("Your Password is wrong")
                 return redirect(url_for('login'))
         else:
-            flash("Username does not exist! Please register.")
+            flash("Email does not exist! Please register.")
             return redirect(url_for('login'))
     return render_template("Login.html")
 
-# Logout
 @app.route("/logout")
 def logout():
     session.pop("name", None)
     return redirect(url_for('home'))
 
+def get_all_tickers():
+    conn = sqlite3.connect("databases/stocks.db")
+    cur = conn.cursor()
+    cur.execute("SELECT Tickers FROM STOCKS")
+    results = cur.fetchall()
+    conn.close()
+    return [row[0] for row in results]
+
+@app.route("/dashboard")
+def index():
+    results = get_all_tickers()
+    return render_template("Dashboard/dashboard.html", results=results, nb="Search Stocks")
+
+@app.route("/dashboard/<ticker>")
+def stock_detail(ticker):
+    return f"<h1>Welcome to the stock detail page for {ticker}</h1>"
+
+@app.route('/logo/<path:filename>')
+def serve_logo(filename):
+    return send_from_directory("data/logo", filename)
 if __name__ == '__main__':
     app.run(debug=True)
 

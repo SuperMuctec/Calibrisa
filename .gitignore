@@ -2,3 +2,4 @@
 flask_session/
 .env
 databases/users.db
+data/logo/

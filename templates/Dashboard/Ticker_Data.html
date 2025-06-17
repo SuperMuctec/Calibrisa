@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en" class="transition-colors duration-500 ease-in-out">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AAPL | Apple Inc. Stock Analysis</title>
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    /* Custom acrylic glass effect with more blur and tint */
+    .acrylic {
+      background: rgba(255 255 255 / 0.15);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-radius: 12px;
+      border: 1px solid rgba(255 255 255 / 0.25);
+      box-shadow: 0 4px 16px rgba(0 0 0 / 0.1);
+      transition: box-shadow 0.3s ease, transform 0.3s ease, background-color 0.5s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .acrylic:hover {
+      box-shadow: 0 12px 36px rgba(0 0 0 / 0.18);
+      transform: translateY(-5px);
+      cursor: default;
+    }
+
+    /* Dark mode glass */
+    .dark .acrylic {
+      background: rgba(30 41 59 / 0.5); /* slate-800 with 50% opacity */
+      border: 1px solid rgba(255 255 255 / 0.1);
+      box-shadow: 0 4px 16px rgba(0 0 0 / 0.5);
+    }
+    .dark .acrylic:hover {
+      box-shadow: 0 14px 40px rgba(0 0 0 / 0.7);
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      /* Light mode background: pastel tint */
+      background: linear-gradient(135deg, #e9f1fa, #f0e7f7);
+      color: #333;
+      min-height: 100vh;
+      padding: 2rem 1rem;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      transition: background-color 0.5s ease, color 0.5s ease;
+    }
+    /* Dark mode background */
+    .dark body {
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      color: #e0e7ff;
+    }
+
+    a {
+      color: #2563eb; /* Tailwind blue-600 */
+      text-decoration: none;
+      font-weight: 600;
+      transition: color 0.3s ease;
+    }
+    a:hover {
+      color: #1d4ed8; /* Tailwind blue-700 */
+      text-decoration: underline;
+    }
+
+    main {
+      max-width: 960px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    header img {
+      width: 72px;
+      height: 72px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0 0 0 / 0.12);
+      transition: box-shadow 0.3s ease;
+    }
+
+    /* Light/dark subtle shadow for header image */
+    .dark header img {
+      box-shadow: 0 2px 12px rgba(255 255 255 / 0.2);
+    }
+
+    header h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin: 0;
+    }
+
+    header p {
+      margin-top: 0.3rem;
+      font-weight: 500;
+      color: #555;
+      transition: color 0.5s ease;
+    }
+
+    .dark header p {
+      color: #cbd5e1; /* slate-300 */
+    }
+
+    .grid-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.5rem;
+    }
+
+    section h2 {
+      font-weight: 700;
+      font-size: 1.75rem;
+      margin-bottom: 1rem;
+      color: #222;
+      transition: color 0.5s ease;
+    }
+    .dark section h2 {
+      color: #e0e7ff;
+    }
+
+    .card-label {
+      font-weight: 600;
+      font-size: 0.85rem;
+      color: #666;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.3rem;
+      transition: color 0.5s ease;
+    }
+    .dark .card-label {
+      color: #a5b4fc; /* Indigo 300 */
+    }
+
+    .card-value {
+      font-weight: 700;
+      font-size: 1.6rem;
+      color: #111;
+      transition: color 0.5s ease;
+    }
+    .dark .card-value {
+      color: #e0e7ff;
+    }
+
+    .fundamentals {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 1rem;
+      color: #444;
+      font-weight: 600;
+      font-size: 1rem;
+      transition: color 0.5s ease;
+    }
+    .dark .fundamentals {
+      color: #cbd5e1;
+    }
+
+    .fundamentals div {
+      background: rgba(255 255 255 / 0.15);
+      padding: 0.75rem 1rem;
+      border-radius: 10px;
+      border: 1px solid rgba(255 255 255 / 0.25);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 2px 8px rgba(0 0 0 / 0.1);
+      transition: box-shadow 0.3s ease, transform 0.3s ease, background-color 0.5s ease;
+    }
+    .fundamentals div:hover {
+      box-shadow: 0 6px 18px rgba(0 0 0 / 0.2);
+      transform: translateY(-3px);
+      cursor: default;
+    }
+    .dark .fundamentals div {
+      background: rgba(30 41 59 / 0.5);
+      border: 1px solid rgba(255 255 255 / 0.1);
+      box-shadow: 0 4px 16px rgba(0 0 0 / 0.5);
+    }
+    .dark .fundamentals div:hover {
+      box-shadow: 0 10px 30px rgba(0 0 0 / 0.7);
+    }
+
+    .about p {
+      line-height: 1.6;
+      font-size: 1.1rem;
+      color: #444;
+      transition: color 0.5s ease;
+    }
+    .dark .about p {
+      color: #cbd5e1;
+    }
+  </style>
+    <script>
+    tailwind.config = {
+        darkMode: 'selector',
+        theme: {
+            extend: {
+            keyframes: {
+                'slide-in': {
+                '0%': { transform: 'translateY(-20px)', opacity: '0' },
+                '100%': { transform: 'translateY(0)', opacity: '1' },
+                },
+            },
+            animation: {
+                'slide-in': 'slide-in-down 0.3s ease-out',
+            },
+            colors: {
+                clifford: '#da373d',
+        }
+    }
+    }
+    }
+    </script>
+</head>
+<body class="transition-colors duration-500 ease-in-out">
+  <main>
+    <!-- Header -->
+    <header>
+      <img src="https://logo.clearbit.com/apple.com" alt="Apple Logo" />
+      <div>
+        <h1>Apple Inc. <small style="color:#555; font-weight:600;" class="dark:text-slate-400">(AAPL)</small></h1>
+        <p>Technology • Consumer Electronics</p>
+      </div>
+    </header>
+
+    <!-- Price Overview -->
+    <section class="grid-cards" aria-label="Stock price overview">
+      <article class="acrylic p-6">
+        <p class="card-label">Current Price</p>
+        <p class="card-value">$189.25</p>
+      </article>
+      <article class="acrylic p-6">
+        <p class="card-label">Previous Close</p>
+        <p class="card-value">$185.55</p>
+      </article>
+      <article class="acrylic p-6">
+        <p class="card-label">52-Week Range</p>
+        <p class="card-value">$124.22 — $199.75</p>
+      </article>
+      <article class="acrylic p-6">
+        <p class="card-label">Market Cap</p>
+        <p class="card-value">$2.94T</p>
+      </article>
+      <article class="acrylic p-6">
+        <p class="card-label">Avg. Volume</p>
+        <p class="card-value">75M</p>
+      </article>
+      <article class="acrylic p-6">
+        <p class="card-label">Dividend Yield</p>
+        <p class="card-value">0.5%</p>
+      </article>
+    </section>
+
+    <!-- Valuation & Fundamentals -->
+    <section aria-label="Valuation and fundamentals">
+      <h2>Valuation &amp; Fundamentals</h2>
+      <div class="fundamentals">
+        <div>Trailing PE: <strong>32.1</strong></div>
+        <div>Forward PE: <strong>28.3</strong></div>
+        <div>EPS (TTM): <strong>5.89</strong></div>
+        <div>EPS (Forward): <strong>6.3</strong></div>
+        <div>Dividend Rate: <strong>$0.92</strong></div>
+        <div>Dividend Yield: <strong>0.5%</strong></div>
+        <div>Analyst Rating: <strong>Buy</strong></div>
+        <div>Target Price: <strong>$200.00</strong></div>
+      </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="about" aria-label="About company">
+      <h2>About Apple</h2>
+      <p>
+        Apple Inc. designs, manufactures, and markets smartphones, personal computers, tablets, wearables, and accessories worldwide.
+        The company also offers a range of services including iCloud, Apple Music, and Apple TV+. Known for innovation and premium design, Apple is a leading force in consumer electronics.
+      </p>
+      <p style="margin-top: 1rem;">
+        <a href="https://apple.com" target="_blank" rel="noopener noreferrer">Visit Official Site</a>
+      </p>
+    </section>
+  </main>
+</body>
+</html>

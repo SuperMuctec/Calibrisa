@@ -6,6 +6,8 @@ source .venv/bin/activate
 
 pip install -r requirements.txt
 
+mkdir data/logo
+
 mkdir databases
 
 touch .env

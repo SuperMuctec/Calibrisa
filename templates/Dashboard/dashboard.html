@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en" id="Html" class="transition-all transform-gpu duration-150">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Stock Search</title>
+  
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background-color: #111827;
+    }
+  </style>
+  
+
+  <script>
+    tailwind.config = {
+      darkMode: 'selector',
+      theme: {
+        extend: {
+          keyframes: {
+            'slide-in': {
+              '0%': { transform: 'translateY(-20px)', opacity: '0' },
+              '100%': { transform: 'translateY(0)', opacity: '1' },
+            },
+          },
+          animation: {
+            'slide-in': 'slide-in-down 0.3s ease-out',
+          },
+          colors: {
+            clifford: '#da373d',
+          }
+        }
+      }
+    };
+
+    
+  </script>
+</head>
+
+<body class="dark:bg-gray-900 dark:text-white text-black bg-white min-h-screen flex flex-col items-center px-8 pb-8">
+
+  {% include "Components/Navbar.html" %}
+
+  <!-- Wrapper for offset from fixed navbar -->
+  <div class="mt-24 w-full flex flex-col items-center">
+
+    <input type="text" id="searchInput" placeholder="Search for a Ticker..." 
+          class="w-full max-w-md px-4 py-2 mb-10 rounded-lg dark:bg-gray-800 bg-slate-200 border dark:border-gray-600 dark:text-white text-black border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500"/>
+
+    <div id="cardsContainer" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 w-full max-w-5xl">
+      {% for ticker in results %}
+      <div class="hover-sine">
+        <a href="{{ url_for('stock_detail', ticker=ticker) }}" 
+          class="group bg-gray-800 rounded-2xl shadow-md hover:shadow-blue-500/30 hover:scale-[1.02] transition-all duration-300 p-5 flex flex-col items-center text-center">
+          <h2 class="text-2xl font-bold text-white group-hover:text-blue-400 transition">{{ ticker }}</h2>
+          <img
+            data-src="{{ url_for('serve_logo', filename=ticker + '.png') }}"
+            alt="{{ ticker }} logo"
+            class="lazy opacity-0 transition-opacity duration-700 ease-in-out w-28 h-28 object-contain mt-4 rounded-md shadow-inner bg-white p-2 z-[96px]"
+            loading="lazy"
+          />
+          <p class="text-sm text-gray-400 mt-3">Tap to view details</p>
+        </a>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Script Section -->
+  <script>
+    document.getElementById("searchInput").addEventListener("input", function () {
+      const query = this.value.toLowerCase();
+      const cards = document.querySelectorAll("#cardsContainer > div");
+
+      cards.forEach(card => {
+        const ticker = card.querySelector("h2").textContent.toLowerCase();
+        card.style.display = ticker.includes(query) ? "block" : "none";
+      });
+    });
+
+    // Floating animation
+    const sineDivs = document.querySelectorAll('.hover-sine');
+    sineDivs.forEach(div => {
+      let hovering = false;
+      let angle = 0;
+      let requestId;
+
+      function animate() {
+        if (!hovering) return;
+        angle += 4;
+        if (angle >= 360) angle = 0;
+        const y = Math.sin(angle * Math.PI / 180) * 5;
+        div.style.transform = `translateY(${y}px)`;
+        requestId = requestAnimationFrame(animate);
+      }
+
+      div.addEventListener('mouseenter', () => {
+        hovering = true;
+        animate();
+      });
+
+      div.addEventListener('mouseleave', () => {
+        hovering = false;
+        cancelAnimationFrame(requestId);
+        div.style.transform = 'translateY(0)';
+      });
+    });
+
+    // Lazy load after page is fully loaded
+    window.onload = () => {
+      const lazyImages = document.querySelectorAll('img.lazy');
+
+      if ('IntersectionObserver' in window) {
+        const observer = new IntersectionObserver((entries, obs) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              const img = entry.target;
+              img.src = img.dataset.src;
+
+              img.onload = () => {
+                img.classList.remove('opacity-0');
+              };
+
+              img.classList.remove('lazy');
+              obs.unobserve(img);
+            }
+          });
+        }, {
+          rootMargin: "100px",
+          threshold: 0.1
+        });
+
+        lazyImages.forEach(img => observer.observe(img));
+      } else {
+        // Fallback for older browsers
+        lazyImages.forEach(img => {
+          img.src = img.dataset.src;
+          img.onload = () => img.classList.remove('opacity-0');
+        });
+      }
+    };
+  </script>
+
+</body>
+</html>

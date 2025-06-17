@@ -26,12 +26,11 @@
     }
 
     function setupOTPInputs() {
-      const inputs = document.querySelectorAll("input[name^='otp']");
+      const inputs = document.querySelectorAll(".otp-box");
       inputs.forEach((input, index) => {
         input.addEventListener("input", (e) => {
-          e.target.value = e.target.value.replace(/\D/g, ''); // Only digits
+          e.target.value = e.target.value.replace(/\D/g, '');
 
-          // Show send button again if user edits
           enableOTPButtonOnEdit();
 
           if (e.target.value.length === 1 && index < inputs.length - 1) {
@@ -48,28 +47,39 @@
                 e.preventDefault();
               }
             } else {
-              input.value = ""; // Clear current box
-              e.preventDefault(); // Prevent cursor jump
+              input.value = "";
+              e.preventDefault();
             }
           }
+        });
+
+        input.addEventListener("paste", (e) => {
+          const pasteData = e.clipboardData.getData("text").replace(/\D/g, '').slice(0, inputs.length);
+          for (let i = 0; i < pasteData.length; i++) {
+            inputs[i].value = pasteData[i];
+          }
+          if (pasteData.length === inputs.length) {
+            inputs[inputs.length - 1].focus();
+          } else if (pasteData.length > 0) {
+            inputs[pasteData.length - 1].focus();
+          }
+          e.preventDefault();
         });
       });
     }
 
     function enableOTPButtonOnEdit() {
       const btn = document.getElementById("sendBtn");
-      if (btn.classList.contains("hidden")) {
+      if (btn && btn.classList.contains("hidden")) {
         btn.classList.remove("hidden");
       }
     }
 
-    // Auto run these on page load
     window.onload = () => {
       startCountdown();
       setupOTPInputs();
     };
   </script>
-
 </head>
 <body class="dark:bg-slate-800 pt-[5rem]">
   <div class="relative mx-auto my-24 max-w-md w-[90%] group">
@@ -84,7 +94,7 @@
             {% for category, msg in messages %}
             {% if category == 'login' %}
               <a href="/login">
-              <div class="p-4 rounded-md text-white text-center {% if category == 'success' %}bg-green-600{% elif category == 'info' %}bg-blue-600{% else %}bg-red-600{% endif %}">{{ msg }}</div>
+                <div class="p-4 rounded-md text-white text-center {% if category == 'success' %}bg-green-600{% elif category == 'info' %}bg-blue-600{% else %}bg-red-600{% endif %}">{{ msg }}</div>
               </a>
             {% else %}
               <div class="p-4 rounded-md text-white text-center {% if category == 'success' %}bg-green-600{% elif category == 'info' %}bg-blue-600{% else %}bg-red-600{% endif %}">{{ msg }}</div>
@@ -102,7 +112,7 @@
         {% if show_otp %}
           <div class="flex justify-between gap-2">
             {% for i in range(4) %}
-              <input maxlength="1" id="otp{{ i }}" name="otp{{ i }}" type="text" oninput="handleOTPInput(event, 'otp{{ i + 1 }}')" class="w-1/4 text-center rounded-md px-4 py-3 bg-white/70 dark:bg-black/40 border-2 border-black dark:border-white text-black dark:text-white">
+              <input maxlength="1" id="otp{{ i }}" name="otp{{ i }}" type="text" class="otp-box w-1/4 text-center rounded-md px-4 py-3 bg-white/70 dark:bg-black/40 border-2 border-black dark:border-white text-black dark:text-white">
             {% endfor %}
           </div>
           <button type="submit" class="w-full mt-4 border-2 border-black dark:border-white rounded-full bg-green-600 px-5 py-3 font-bold text-white">Verify OTP</button>
@@ -111,6 +121,12 @@
           <button id="sendBtn" type="submit" class="w-full border-2 border-black dark:border-white rounded-full bg-slate-50 px-5 py-3 font-bold dark:bg-slate-800 dark:text-white hover:bg-green-300 hover:text-green-800 flex items-center justify-center gap-3 mb-6">Send OTP</button>
         {% endif %}
       </form>
+      <p class="text-center text-sm text-black dark:text-white py-2">
+      Already have an account?
+      <a href="/login" class="font-semibold text-green-600 dark:text-green-400 hover:underline">
+        Login here
+      </a>
+    </p>
     </div>
   </div>
 </body>
