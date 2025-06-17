@@ -1,6 +1,19 @@
 <!DOCTYPE html>
 <html lang="en", id="Html">
 <head>
+    <script>
+    const savedTheme = localStorage.getItem("theme");
+    if (savedTheme === "dark") {
+      document.documentElement.className = "dark";
+    } else if (savedTheme === "light") {
+      document.documentElement.className = "light";
+    } else {
+      // Default fallback based on system preference
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      document.documentElement.className = prefersDark ? "dark" : "light";
+      localStorage.setItem("theme", prefersDark ? "dark" : "light");
+    }
+  </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calibrisa</title>
@@ -41,4 +54,16 @@
     {%include 'Components/Footer.html'%}
 
 </body>
+<script>
+  window.onload = () => {
+    const theme = localStorage.getItem("theme");
+    const icon = document.getElementById("darkmode");
+    if (theme === "dark") {
+      icon.src = "/static/light.svg";
+    } else {
+      icon.src = "/static/dark.svg";
+    }
+  }
+</script>
+
 </html>

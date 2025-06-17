@@ -4,18 +4,15 @@ function popsicle(ar) {
 
 function darkmode() {
     const html = document.getElementById("Html");
+    const icon = document.getElementById("darkmode");
 
     if (html.className === "dark") {
         html.className = "light";
-        console.log("Light mode")
+        localStorage.setItem("theme", "light");
+        icon.src = "/static/dark.svg";
     } else {
         html.className = "dark";
-        console.log("Dark mode")
+        localStorage.setItem("theme", "dark");
+        icon.src = "/static/light.svg";
     }
-
-    const button = document.getElementById("darkmode-btn");
-    const icon = button.querySelector('img');
-    const current = popsicle(icon.src.split('/'));
-    console.log(icon.src)
-    icon.src = (icon.src.includes("static/dark.svg")) ? "static/light.svg" : "static/dark.svg";
 }

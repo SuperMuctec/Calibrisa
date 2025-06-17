@@ -1,18 +1,42 @@
 <!DOCTYPE html>
-<html lang="en" id="Html" class="transition-all transform-gpu duration-150">
+<html lang="en" id="Html" class="transition-all transform-gpu ease-in-out">
 <head>
+  <script>
+    const savedTheme = localStorage.getItem("theme");
+    if (savedTheme === "dark") {
+      document.documentElement.className = "dark";
+    } else if (savedTheme === "light") {
+      document.documentElement.className = "light";
+    } else {
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      document.documentElement.className = prefersDark ? "dark" : "light";
+      localStorage.setItem("theme", prefersDark ? "dark" : "light");
+    }
+  </script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Stock Search</title>
-  
+  <title>Dashboard - Stock Search</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     body {
       background-color: #111827;
     }
+
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button {
+      filter: invert(1);
+    }
+
+    .dark input[type=number]::-webkit-inner-spin-button,
+    .dark input[type=number]::-webkit-outer-spin-button {
+      filter: invert(1);
+    }
+
+    input[type=number] {
+      color-scheme: dark;
+    }
   </style>
-  
 
   <script>
     tailwind.config = {
@@ -34,53 +58,99 @@
         }
       }
     };
-
-    
   </script>
 </head>
 
-<body class="dark:bg-gray-900 dark:text-white text-black bg-white min-h-screen flex flex-col items-center px-8 pb-8">
+<body class="dark:bg-gray-900 dark:text-white text-black bg-white min-h-screen flex flex-col items-center px-8 pb-8 transition-all transform-gpu">
 
   {% include "Components/Navbar.html" %}
 
-  <!-- Wrapper for offset from fixed navbar -->
-  <div class="mt-24 w-full flex flex-col items-center">
+  <div class="mt-24 w-full flex flex-col items-center transition-all transform-gpu">
+    <!-- Search Bar -->
+    <form method="get" action="{{ url_for('index') }}" class="w-full max-w-md">
+      <input
+        type="text"
+        name="q"
+        value="{{ query or '' }}"
+        placeholder="Search for a Ticker..."
+        class="w-full px-4 py-2 mb-10 rounded-lg dark:bg-gray-800 bg-slate-200 border dark:border-gray-600 dark:text-white text-black border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all transform-gpu"
+      />
+      <input type="hidden" name="page" value="1">
+    </form>
 
-    <input type="text" id="searchInput" placeholder="Search for a Ticker..." 
-          class="w-full max-w-md px-4 py-2 mb-10 rounded-lg dark:bg-gray-800 bg-slate-200 border dark:border-gray-600 dark:text-white text-black border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500"/>
-
-    <div id="cardsContainer" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 w-full max-w-5xl">
+    <!-- Cards -->
+    <div id="cardsContainer" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 w-full max-w-5xl transition-all transform-gpu">
       {% for ticker in results %}
       <div class="hover-sine">
-        <a href="{{ url_for('stock_detail', ticker=ticker) }}" 
-          class="group bg-gray-800 rounded-2xl shadow-md hover:shadow-blue-500/30 hover:scale-[1.02] transition-all duration-300 p-5 flex flex-col items-center text-center">
-          <h2 class="text-2xl font-bold text-white group-hover:text-blue-400 transition">{{ ticker }}</h2>
+        <a href="{{ url_for('stock_detail', ticker=ticker) }}"
+          class="group dark:bg-gray-800 bg-slate-300 rounded-2xl shadow-md hover:shadow-blue-500 dark:hover:shadow-blue-500/30 hover:scale-[1.02] transition-all transform-gpu duration-300 p-5 flex flex-col items-center text-center">
+          <h2 class="text-2xl font-bold dark:text-white text-black group-hover:text-blue-400 transition-all transform-gpu">{{ ticker }}</h2>
           <img
             data-src="{{ url_for('serve_logo', filename=ticker + '.png') }}"
             alt="{{ ticker }} logo"
-            class="lazy opacity-0 transition-opacity duration-700 ease-in-out w-28 h-28 object-contain mt-4 rounded-md shadow-inner bg-white p-2 z-[96px]"
+            class="lazy opacity-0 transition-opacity duration-700 ease-in-out w-28 h-28 object-contain mt-4 rounded-md shadow-inner bg-white p-2"
             loading="lazy"
           />
-          <p class="text-sm text-gray-400 mt-3">Tap to view details</p>
+          <p class="text-sm text-slate-800 dark:text-gray-400 mt-3 transition-all transform-gpu">Tap to view details</p>
         </a>
       </div>
       {% endfor %}
     </div>
+
+    <!-- Pagination Controls -->
+    <div class="flex justify-between w-full max-w-md mt-8">
+      {% if has_prev %}
+      <a href="{{ url_for('index', q=query, page=page - 1) }}"
+         class="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-xl transition-all transform-gpu shadow-md">
+        Show Less
+      </a>
+      {% else %}
+      <span></span>
+      {% endif %}
+
+      {% if has_more %}
+      <a href="{{ url_for('index', q=query, page=page + 1) }}"
+         class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-xl transition-all transform-gpu shadow-md">
+        Show More
+      </a>
+      {% endif %}
+    </div>
+
+    <!-- Page Jump Form -->
+    {% if total_pages > 1 %}
+    <form method="get" action="{{ url_for('index') }}" class="mt-6 flex flex-col sm:flex-row items-center justify-center gap-4 w-full max-w-md">
+      <label for="pageInput" class="text-gray-300 text-sm">Jump to page</label>
+      <input 
+        id="pageInput"
+        type="number" 
+        name="page" 
+        min="1" 
+        max="{{ total_pages }}" 
+        value="{{ page }}" 
+        placeholder="Page #" 
+        class="w-24 px-4 py-2 rounded-lg dark:bg-gray-800 bg-slate-200 border dark:border-gray-600 dark:text-white text-black border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all transform-gpu"
+        required 
+      />
+      {% if query %}
+        <input type="hidden" name="q" value="{{ query }}">
+      {% endif %}
+      <button 
+        type="submit" 
+        class="px-6 py-2 bg-green-600 hover:bg-green-700 text-white rounded-xl shadow-md transition-all transform-gpu">
+        Go
+      </button>
+    </form>
+    {% endif %}
+
+    {% if total_pages == 0 %}
+      <p class="mt-4 text-gray-400">No Results</p>
+    {% else %}
+      <p class="mt-4 text-gray-400">Page {{ page }} of {{ total_pages }}</p>
+    {% endif %}
   </div>
 
-  <!-- Script Section -->
   <script>
-    document.getElementById("searchInput").addEventListener("input", function () {
-      const query = this.value.toLowerCase();
-      const cards = document.querySelectorAll("#cardsContainer > div");
-
-      cards.forEach(card => {
-        const ticker = card.querySelector("h2").textContent.toLowerCase();
-        card.style.display = ticker.includes(query) ? "block" : "none";
-      });
-    });
-
-    // Floating animation
+    // Hover sine animation
     const sineDivs = document.querySelectorAll('.hover-sine');
     sineDivs.forEach(div => {
       let hovering = false;
@@ -108,7 +178,7 @@
       });
     });
 
-    // Lazy load after page is fully loaded
+    // Lazy loading
     window.onload = () => {
       const lazyImages = document.querySelectorAll('img.lazy');
 
@@ -118,11 +188,7 @@
             if (entry.isIntersecting) {
               const img = entry.target;
               img.src = img.dataset.src;
-
-              img.onload = () => {
-                img.classList.remove('opacity-0');
-              };
-
+              img.onload = () => img.classList.remove('opacity-0');
               img.classList.remove('lazy');
               obs.unobserve(img);
             }
@@ -134,14 +200,19 @@
 
         lazyImages.forEach(img => observer.observe(img));
       } else {
-        // Fallback for older browsers
         lazyImages.forEach(img => {
           img.src = img.dataset.src;
           img.onload = () => img.classList.remove('opacity-0');
         });
       }
+
+      // Darkmode icon toggle
+      const theme = localStorage.getItem("theme");
+      const icon = document.getElementById("darkmode");
+      if (icon) {
+        icon.src = theme === "dark" ? "/static/light.svg" : "/static/dark.svg";
+      }
     };
   </script>
-
 </body>
 </html>

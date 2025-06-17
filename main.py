@@ -244,8 +244,47 @@ def get_all_tickers():
 
 @app.route("/dashboard")
 def index():
-    results = get_all_tickers()
-    return render_template("Dashboard/dashboard.html", results=results, nb="Search Stocks")
+    # Get query and page from request
+    query = request.args.get("q", "").lower()
+    page = int(request.args.get("page", 1))
+    per_page = 100
+
+    # Fetch all tickers
+    conn = sqlite3.connect("databases/stocks.db")
+    cur = conn.cursor()
+    cur.execute("SELECT Tickers FROM STOCKS")
+    results = cur.fetchall()
+    conn.close()
+
+    all_stocks = [row[0] for row in results]
+
+    # Filter based on query
+    if query:
+        filtered = [stock for stock in all_stocks if query in stock.lower()]
+    else:
+        filtered = all_stocks
+
+    # Pagination
+    total_items = len(filtered)
+    total_pages = (total_items + per_page - 1) // per_page
+    start = (page - 1) * per_page
+    end = start + per_page
+    paginated_results = filtered[start:end]
+
+    has_more = page < total_pages
+    has_prev = page > 1
+
+    return render_template(
+        "Dashboard/dashboard.html",
+        results=paginated_results,
+        query=query,
+        page=page,
+        total_pages=total_pages,
+        has_more=has_more,
+        has_prev=has_prev,
+        nb="Search Stocks"
+    )
+
 
 @app.route("/dashboard/<ticker>")
 def stock_detail(ticker):
