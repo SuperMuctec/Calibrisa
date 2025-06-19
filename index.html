@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en" id="Html" class="transition-all transform-gpu ease-in-out">
+<head>
+  <script>
+    const savedTheme = localStorage.getItem("theme");
+    if (savedTheme === "dark") {
+      document.documentElement.className = "dark";
+    } else if (savedTheme === "light") {
+      document.documentElement.className = "light";
+    } else {
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      document.documentElement.className = prefersDark ? "dark" : "light";
+      localStorage.setItem("theme", prefersDark ? "dark" : "light");
+    }
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calibrisa - Stock Market at a Glance</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'selector',
+      theme: {
+        extend: {
+          keyframes: {
+            'slide-in': {
+              '0%': { transform: 'translateY(-20px)', opacity: '0' },
+              '100%': { transform: 'translateY(0)', opacity: '1' },
+            },
+            'fade-in': {
+              '0%': { opacity: '0' },
+              '100%': { opacity: '1' },
+            }
+          },
+          animation: {
+            'slide-in': 'slide-in 0.3s ease-out',
+            'fade-in': 'fade-in 0.5s ease-out',
+          },
+        }
+      }
+    }
+  </script>
+  <style>
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; }
+  </style>
+</head>
+<body class="dark:bg-slate-800 bg-white transition-colors duration-300">
+  
+  <!-- Navigation -->
+  <nav id="navbar" class="flex fixed justify-between z-50 w-full items-center backdrop-blur-md bg-white/10 dark:bg-black/10 border-b border-white/20 dark:border-black/20 shadow-sm">
+    <span class="px-6 md:px-20 py-4 font-semibold text-lg md:text-xl text-slate-800 dark:text-white whitespace-nowrap">
+      Calibrisa
+    </span>
+    <ul class="flex flex-wrap justify-end items-center gap-2 md:gap-6 px-6 md:px-28 py-4 font-mono">
+      <li class="border-2 dark:border-white dark:text-slate-200 border-slate-500 hover:border-slate-800 transform-gpu transition-transform text-slate-900 hover:bg-orange-500 hover:-translate-y-1 px-4 rounded-full py-[5px] whitespace-nowrap cursor-pointer" onclick="showSection('home')">
+        Home
+      </li>
+      <li class="border-2 dark:border-white dark:text-slate-200 border-slate-500 hover:border-slate-800 transform-gpu transition-transform text-slate-900 hover:bg-orange-500 hover:-translate-y-1 px-4 rounded-full py-[5px] whitespace-nowrap cursor-pointer" onclick="showSection('dashboard')">
+        Dashboard
+      </li>
+      <li class="border-2 dark:border-white dark:text-slate-200 border-slate-500 hover:border-slate-800 transform-gpu transition-transform text-slate-900 hover:bg-orange-500 hover:-translate-y-1 px-4 rounded-full py-[5px] whitespace-nowrap cursor-pointer" onclick="showSection('contact')">
+        Contact
+      </li>
+      <a href="https://discord.gg/Q4Ys8rTw6y" target="_blank" rel="noreferrer">
+        <li class="border-2 dark:border-white dark:text-slate-200 border-slate-500 hover:border-slate-800 transform-gpu transition-transform text-slate-900 hover:bg-orange-500 hover:-translate-y-1 px-4 rounded-full py-[5px] whitespace-nowrap">
+          Discord
+        </li>
+      </a>
+      <li class="transform-gpu transition-transform hover:-translate-y-1 whitespace-nowrap">
+        <button onclick="toggleDarkMode()">
+          <img id="darkmode-icon" class="w-6 md:w-8" src="/static/light.svg" alt="toggle theme" />
+        </button>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- Home Section -->
+  <section id="home-section" class="section-content">
+    <!-- Hero Section -->
+    <section class="relative overflow-hidden min-h-[80vh] transform-gpu transition-all text-green-500 dark:text-white bg-gradient-to-b from-pink-400 to-white dark:bg-gradient-to-b dark:from-blue-600 dark:to-blue-950 pt-0">
+      <div class="absolute inset-0 bg-black opacity-50"></div>
+      <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('https://images.pexels.com/photos/6801648/pexels-photo-6801648.jpeg');">
+      </div>
+      <div class="container mx-auto px-4 pt-16 pb-24 md:pt-20 md:pb-32 relative z-10">
+        <div class="flex flex-col md:flex-row items-center justify-between">
+          <div class="w-full md:w-1/2 mb-12 md:mb-0 p-7 bg-opacity-15 backdrop-filter backdrop-blur-2xl rounded-3xl transition-transform shadow-lg ease-in-out duration-200 hover:scale-105">
+            <h1 class="text-5xl md:text-6xl font-bold mb-6 leading-tight">
+              Calibrisa
+            </h1>
+            <p class="text-xl mb-8 font-mono">-> A Hub for Code & Community</p>
+            <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
+              <button onclick="showSection('dashboard')" class="bg-white text-blue-900 font-semibold px-8 py-3 rounded-full hover:bg-green-900 hover:text-blue-100 transition duration-300 text-center transform-gpu hover:-translate-y-1 shadow-sm hover:shadow-lg">
+                Search Stocks
+              </button>
+              <a href="https://discord.gg/Q4Ys8rTw6y" target="_blank" class="border-2 border-white text-white font-semibold px-8 py-3 rounded-full hover:bg-white hover:text-blue-900 transition duration-300 text-center transform-gpu hover:-translate-y-1 shadow-sm hover:shadow-lg">
+                Join Community →
+              </a>
+            </div>
+          </div>
+          <div class="w-[300px] pl-12 text-black dark:text-white transition-transform ease-in-out duration-200 hover:scale-105">
+            <div class="bg-white bg-opacity-15 backdrop-filter backdrop-blur-lg rounded-xl p-4 shadow-2xl">
+              <div class="w-[300px] h-[300px] bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center text-white text-6xl font-bold">
+                📈
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="py-16 bg-white text-center dark:bg-slate-800 transition-colors duration-200">
+      <h2 class="text-3xl font-bold mb-10 dark:text-white transition-colors duration-200">Why Choose Calibrisa?</h2>
+      <div class="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 px-4">
+        <div class="p-6 rounded-xl bg-green-50 dark:bg-green-950 transform-gpu hover:-translate-y-1 hover:shadow-lg shadow-sm hover:shadow-green-200 dark:hover:shadow-green-800 transition-all duration-200 ease-in-out hover:scale-105">
+          <h3 class="font-semibold mb-2 dark:text-green-300 text-green-700 transition-colors duration-200">Community Driven</h3>
+          <p class="text-gray-600 dark:text-gray-400">Connect with like-minded traders and investors. Share insights and learn together.</p>
+        </div>
+        <div class="p-6 rounded-xl bg-yellow-50 dark:bg-yellow-950 transform-gpu hover:-translate-y-1 hover:shadow-lg shadow-sm hover:shadow-yellow-200 dark:hover:shadow-yellow-800 transition-all duration-200 ease-in-out hover:scale-105">
+          <h3 class="font-semibold mb-2 text-yellow-700 dark:text-yellow-300 transition-colors duration-200">Real-time Data</h3>
+          <p class="text-gray-600 dark:text-gray-400">Access up-to-date stock information and market analysis tools.</p>
+        </div>
+        <div class="p-6 rounded-xl bg-red-50 dark:bg-red-950 transform-gpu hover:-translate-y-1 hover:shadow-lg shadow-sm hover:shadow-red-200 dark:hover:shadow-red-800 transition-all duration-200 ease-in-out hover:scale-105">
+          <h3 class="font-semibold mb-2 text-red-700 dark:text-red-300 transition-colors duration-200">Easy to Use</h3>
+          <p class="text-gray-600 dark:text-gray-400">Intuitive interface designed for both beginners and experienced traders.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Goals Section -->
+    <main class="py-16 px-4 bg-gray-50 text-gray-800 dark:bg-slate-800 dark:text-white transition-colors duration-200">
+      <div class="max-w-6xl mx-auto">
+        <h2 class="text-3xl font-bold text-center mb-10">Our Goals</h2>
+        <div class="grid md:grid-cols-2 gap-10">
+          <div class="group p-6 rounded-2xl border border-gray-200 bg-green-50 shadow-sm text-left hover:shadow-md hover:bg-slate-400 dark:hover:bg-slate-300 dark:bg-slate-800 transition-all duration-200 hover:-translate-y-2 ease-in-out">
+            <h3 class="text-lg font-bold text-green-700 mb-1 dark:text-white dark:group-hover:text-slate-800">Practice Trading</h3>
+            <p class="text-gray-600 dark:text-gray-200 text-sm mb-3 group-hover:text-black">Provide you practice so that you can flex or win at the big place</p>
+            <div class="flex flex-wrap gap-2 mb-4">
+              <span class="inline-block px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-red-700 transform-gpu transition-all hover:-translate-y-1 duration-200 ease-in-out hover:scale-105">Practice</span>
+              <span class="inline-block px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-yellow-700 transform-gpu transition-all hover:-translate-y-1 duration-200 ease-in-out hover:scale-105">Play</span>
+            </div>
+          </div>
+          <div class="group p-6 rounded-2xl border border-gray-200 bg-green-50 shadow-sm text-left hover:shadow-md hover:bg-slate-400 dark:hover:bg-slate-300 dark:bg-slate-800 transition-all duration-200 hover:-translate-y-2 ease-in-out">
+            <h3 class="text-lg font-bold text-green-700 mb-1 dark:text-white dark:group-hover:text-slate-800">Compete</h3>
+            <p class="text-gray-600 dark:text-gray-200 text-sm mb-3 group-hover:text-black">Compete with other players to win big.</p>
+            <div class="flex flex-wrap gap-2 mb-4">
+              <span class="inline-block px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-700 transform-gpu transition-all hover:-translate-y-1 duration-200 ease-in-out hover:scale-105">Community</span>
+              <span class="inline-block px-2 py-1 text-xs font-semibold rounded-full bg-cyan-100 text-fuchsia-700 transform-gpu transition-all hover:-translate-y-1 duration-200 ease-in-out hover:scale-105">Compete</span>
+              <span class="inline-block px-2 py-1 text-xs font-semibold rounded-full bg-fuchsia-100 text-fuchsia-700 transform-gpu transition-all hover:-translate-y-1 duration-200 ease-in-out hover:scale-105">Leaderboard</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </section>
+
+  <!-- Dashboard Section -->
+  <section id="dashboard-section" class="section-content hidden">
+    <div class="mt-24 w-full flex flex-col items-center transition-all transform-gpu px-8 pb-8">
+      <h1 class="text-4xl font-bold mb-8 dark:text-white">Stock Dashboard</h1>
+      
+      <!-- Search Bar -->
+      <div class="w-full max-w-md mb-10">
+        <input
+          type="text"
+          id="search-input"
+          placeholder="Search for a Ticker..."
+          class="w-full px-4 py-2 rounded-lg dark:bg-gray-800 bg-slate-200 border dark:border-gray-600 dark:text-white text-black border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all transform-gpu"
+        />
+      </div>
+
+      <!-- Loading State -->
+      <div id="loading" class="hidden text-center">
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
+        <p class="mt-4 text-gray-500 dark:text-gray-400">Loading stocks...</p>
+      </div>
+
+      <!-- Stock Cards Container -->
+      <div id="stocks-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 w-full max-w-6xl transition-all transform-gpu">
+        <!-- Stock cards will be populated here -->
+      </div>
+
+      <!-- Pagination -->
+      <div id="pagination" class="flex justify-center gap-4 mt-8">
+        <button id="prev-btn" class="px-6 py-2 bg-red-500 hover:bg-red-600 text-white rounded-xl transition-all transform-gpu shadow-md disabled:opacity-50 disabled:cursor-not-allowed">
+          Previous
+        </button>
+        <span id="page-info" class="px-4 py-2 text-gray-600 dark:text-gray-400"></span>
+        <button id="next-btn" class="px-6 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-xl transition-all transform-gpu shadow-md disabled:opacity-50 disabled:cursor-not-allowed">
+          Next
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact Section -->
+  <section id="contact-section" class="section-content hidden">
+    <div class="relative mx-auto my-24 max-w-xl w-[90%] group">
+      <div class="absolute inset-0 flex items-center justify-center rounded-xl border-2 py-20 backdrop-blur-[0.01px] transform-gpu transition-transform duration-700 group-hover:-rotate-12 border-black dark:border-white z-0"></div>
+      <div class="absolute inset-0 flex items-center justify-center rounded-xl border-2 py-20 backdrop-blur-[0.01px] transform-gpu transition-transform duration-700 group-hover:rotate-12 border-black dark:border-white z-0"></div>
+      
+      <div class="relative z-10 rounded-xl border-2 border-black dark:border-white p-8 backdrop-blur-sm transition-all duration-700 ease-in-out hover:backdrop-blur-lg bg-white/10 dark:bg-black/10 hover:scale-105">
+        <h2 class="text-2xl font-bold mb-6 text-center dark:text-white font-mono">Contact Us</h2>
+        
+        <form id="contact-form">
+          <input type="text" name="name" placeholder="Name" required class="mb-4 w-full rounded-md p-3 border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white/80 dark:bg-gray-800 dark:text-white transition-all" />
+          <input type="email" name="email" placeholder="Email" required class="mb-4 w-full rounded-md p-3 border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white/80 dark:bg-gray-800 dark:text-white transition-all" />
+          <input type="text" name="subject" placeholder="Subject" required class="mb-4 w-full rounded-md p-3 border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white/80 dark:bg-gray-800 dark:text-white transition-all" />
+          <textarea name="message" rows="6" placeholder="Enter Your Message" required class="mb-4 w-full rounded-md p-3 border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white/80 dark:bg-gray-800 dark:text-white transition-all"></textarea>
+          
+          <div id="contact-message" class="mb-4 hidden"></div>
+          
+          <button type="submit" class="dark:bg-blue-600 text-white px-4 py-2 rounded-full dark:hover:bg-blue-700 w-full transform-gpu transition-all hover:-translate-y-1 duration-200 bg-green-500 hover:bg-green-700">
+            Send Message
+          </button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-gray-900 text-white py-8 mt-16">
+    <div class="max-w-6xl mx-auto px-4">
+      <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-6">
+        <div class="text-center md:text-left">
+          <h2 class="text-xl font-semibold">Calibrisa</h2>
+          <p class="text-sm text-gray-400">© 2025 All rights reserved.</p>
+        </div>
+      </div>
+      <div class="mt-6 text-center text-sm text-gray-500">
+        Made by Team "Calibrisa" 2025
+      </div>
+    </div>
+  </footer>
+
+  <script src="/app.js"></script>
+</body>
+</html>
