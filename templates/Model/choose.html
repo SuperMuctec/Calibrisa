@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <title>Liquid Calendar</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Flatpickr CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
+
+  <style>
+    /* Hyprland-like liquid animation */
+    @keyframes floatIn {
+      0% {
+        opacity: 0;
+        transform: scale(0.95) translateY(-10px);
+        filter: blur(4px);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+        filter: blur(0);
+      }
+    }
+
+    @keyframes floatOut {
+      0% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+        filter: blur(0);
+      }
+      100% {
+        opacity: 0;
+        transform: scale(0.95) translateY(-10px);
+        filter: blur(4px);
+      }
+    }
+
+    .flatpickr-calendar {
+      transition: none !important;
+      background-color: rgba(30, 41, 59, 0.75) !important; /* dark glass */
+      backdrop-filter: blur(10px);
+      border-radius: 1rem;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .flatpickr-calendar.animate-in {
+      animation: floatIn 0.3s ease-out forwards;
+      pointer-events: auto;
+    }
+
+    .flatpickr-calendar.animate-out {
+      animation: floatOut 0.2s ease-in forwards;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-[#e9f1fa] to-[#f0e7f7] dark:from-[#0f172a] dark:to-[#1e293b] text-gray-900 dark:text-white min-h-screen p-6">
+  <div class="max-w-xl mx-auto mt-20">
+    <h1 class="text-3xl font-bold mb-6 text-center">Liquid Calendar Stock Analyzer</h1>
+    <form action="/analyze" method="POST" class="space-y-6 bg-white/10 dark:bg-white/5 backdrop-blur-md p-8 rounded-xl shadow-md">
+
+      <!-- Ticker Input -->
+      <div>
+        <label for="ticker" class="block font-semibold mb-2">Ticker Symbol</label>
+        <input
+          type="text"
+          id="ticker"
+          name="ticker"
+          required
+          class="w-full px-4 py-2 rounded-lg bg-white dark:bg-slate-800 border border-gray-300 dark:border-gray-600 text-black dark:text-white"
+        >
+      </div>
+
+      <!-- Date Picker -->
+      <div>
+        <label for="date" class="block text-lg font-semibold mb-3">Select a Date</label>
+        <input
+          type="text"
+          id="date"
+          name="date"
+          placeholder="Click to choose a date"
+          class="w-full cursor-pointer px-5 py-4 rounded-xl bg-gradient-to-br from-gray-800 to-zinc-900 border border-gray-700 text-white text-md shadow-lg transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-pink-500"
+          readonly
+        />
+      </div>
+
+      <!-- Submit Button -->
+      <div class="text-center">
+        <button class="relative inline-flex items-center justify-center px-6 py-3 overflow-hidden font-semibold tracking-wider text-white transition-all duration-500 ease-out rounded-xl group bg-gradient-to-r from-purple-600 to-pink-500 shadow-xl hover:shadow-pink-500/50 hover:scale-105">
+          <span class="absolute inset-0 w-full h-full transition duration-500 ease-out transform scale-0 bg-white rounded-xl opacity-10 group-hover:scale-100"></span>
+          <span class="relative z-10">Analyze</span>
+        </button>
+      </div>
+
+    </form>
+  </div>
+
+  <!-- Flatpickr JS -->
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script>
+    let calendarInstance = flatpickr("#date", {
+      altInput: true,
+      altFormat: "F j, Y",
+      dateFormat: "Y-m-d",
+      minDate: "today",
+      maxDate: new Date().fp_incr(365 * 5),
+
+      onOpen: function(selectedDates, dateStr, instance) {
+        const cal = instance.calendarContainer;
+        cal.classList.remove('animate-out');
+        cal.classList.add('animate-in');
+      },
+      onClose: function(selectedDates, dateStr, instance) {
+        const cal = instance.calendarContainer;
+        cal.classList.remove('animate-in');
+        cal.classList.add('animate-out');
+      }
+    });
+  </script>
+</body>
+</html>
